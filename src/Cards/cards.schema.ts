@@ -7,10 +7,13 @@ export type CardsDocument = Cards & Document;
 export class Cards extends Document {
 
     @Prop({ required: true })
-        cardCommander: string;
+    cardCommander: string;
 
     @Prop({ type: [String], required: true })
-        cards: string[];
+    cards: string[];
+
+    @Prop()
+    idUser: string
 
 }
 

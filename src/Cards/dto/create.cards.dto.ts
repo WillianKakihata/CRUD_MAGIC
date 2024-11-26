@@ -8,4 +8,6 @@ export class CreateCardsDto {
   @IsArray()
   cards: string[];
 
+  @IsString()
+  idUser: string
 }

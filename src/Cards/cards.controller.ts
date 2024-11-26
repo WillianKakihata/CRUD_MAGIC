@@ -1,14 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, UseGuards } from "@nestjs/common";
 import { CardsService } from "./cards.service";
 import { CreateCardsDto } from "./dto/create.cards.dto";
 import { Cards } from "./cards.schema";
 import { UpdateCardsDto } from "./dto/update.cards.dto";
+import { AuthGuard } from "src/Auth/auth.guard";
 
-
+@UseGuards(AuthGuard)
 @Controller('cards')
 export class CardsController {
     constructor(private readonly CardsService: CardsService){}
 
+    
     @Post()
     async create(@Body() CreateCardsDto: CreateCardsDto): Promise<Cards> {
         try {

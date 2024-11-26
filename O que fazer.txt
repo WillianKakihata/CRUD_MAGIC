@@ -1,0 +1,3 @@
+- Criar Crud de Usuários OK X
+- Criar o sistema de Autenticação para sua API (Só usuários autenticados podem criar e editar seus baralhos) OK X
+- Criar o sistema de Autorização OK X
