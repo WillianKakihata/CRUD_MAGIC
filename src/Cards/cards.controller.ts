@@ -3,9 +3,12 @@ import { CardsService } from "./cards.service";
 import { CreateCardsDto } from "./dto/create.cards.dto";
 import { Cards } from "./cards.schema";
 import { UpdateCardsDto } from "./dto/update.cards.dto";
-import { AuthGuard } from "src/Auth/auth.guard";
+import { AuthGuard } from "src/Auth/guard/auth.guard";
+import { RolesGuard } from "src/Auth/guard/roles.guard";;
+import { Role } from "src/Auth/enum/role.enum";
+import { Roles } from "src/Auth/roles.decorator";
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('cards')
 export class CardsController {
     constructor(private readonly CardsService: CardsService){}
@@ -20,6 +23,7 @@ export class CardsController {
         }
     }
 
+    @Roles(Role.Admin)
     @Get()
     async findAll(): Promise<Cards[]>{
         try {

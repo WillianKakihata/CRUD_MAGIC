@@ -1,3 +1,20 @@
 - Criar Crud de Usuários OK X
 - Criar o sistema de Autenticação para sua API (Só usuários autenticados podem criar e editar seus baralhos) OK X
 - Criar o sistema de Autorização OK X
+
+Implemente a funcionalidade de importação de baralhos de forma assíncrona, utilizando RabbitMQ para gerenciamento de filas e WebSockets para notificações em tempo real aos usuários sobre o status da importação.
+EX:
+
+O usuário faz uma requisição para importar um baralho
+A API recebe a requisição, valida os dados e salva as informações iniciais do baralho no banco de dados.
+
+- Em seguida, a API envia uma mensagem para a fila deck_import_queue no RabbitMQ,/Kafka contendo os detalhes do baralho a ser importado.
+Um worker dedicado está escutando a fila deck_import_queue.
+
+- Ao receber uma mensagem, o worker processa a importação do baralho, realizando todas as operações necessárias, como validação adicional, integração com outros serviços ou persistência final no banco de dados.
+
+- Após concluir o processamento, o worker envia uma mensagem para a fila deck_updates_queue.
+
+- Outro worker, responsável por gerenciar notificações, consome essa mensagem e utiliza WebSockets (por exemplo, com Socket.IO) para emitir um evento de atualização para o cliente conectado.
+
+- O frontend, por sua vez, ouve esse evento e atualiza a interface do usuário em tempo real, informando sobre a conclusão da importação.
