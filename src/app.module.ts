@@ -9,7 +9,7 @@ import { UsersModule } from './Usuario/usuario.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://0.0.0.0/AtividadeMagic'),
+    MongooseModule.forRoot('mongodb://db+/AtividadeMagic'),
     CardsGenerateModule, 
     AuthModule, 
     CardsModule,
