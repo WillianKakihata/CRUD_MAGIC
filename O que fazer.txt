@@ -4,14 +4,13 @@ EX:
 OK -> O usuário faz uma requisição para importar um baralho 
 OK -> A API recebe a requisição, valida os dados e salva as informações iniciais do baralho no banco de dados. 
 
-OK -> Em seguida, a API envia uma mensagem para a fila deck_import_queue no RabbitMQ,/Kafka contendo os detalhes do baralho a ser importado.
+- Em seguida, a API envia uma mensagem para a fila deck_import_queue no RabbitMQ,/Kafka contendo os detalhes do baralho a ser importado.
 Um worker dedicado está escutando a fila deck_import_queue.
 
-OK  -> Ao receber uma mensagem, o worker processa a importação do baralho, realizando todas as operações necessárias, como validação adicional, 
-integração com outros serviços ou persistência final no banco de dados. <- EU FIZ A VALIDACAO ADICIONAL
+- Ao receber uma mensagem, o worker processa a importação do baralho, realizando todas as operações necessárias, como validação adicional, 
+integração com outros serviços ou persistência final no banco de dados. <- Tem que saber como o lucas vai fazer isso ai
 
-OK -> Após concluir o processamento, o worker envia uma mensagem para a fila deck_updates_queue.
+- Após concluir o processamento, o worker envia uma mensagem para a fila deck_updates_queue.
 
 Outro worker, responsável por gerenciar notificações, consome essa mensagem e utiliza WebSockets (por exemplo, com Socket.IO) para emitir um evento de atualização 
 para o cliente conectado.
-
