@@ -11,7 +11,7 @@ export class CardsValidateService {
         @InjectModel(Cards.name) private readonly cardsModel: Model<Cards>,
         private readonly contextService: ContextService
     ) {}
-    
+
     async validateDecks(createCardDto: CreateCardsDto): Promise<string> {
         const { cardCommander, cards } = createCardDto;
       
@@ -36,7 +36,10 @@ export class CardsValidateService {
           throw new BadRequestException(`O baralho contém cartas duplicadas, exceto terrenos básicos: ${duplicateCards.join(', ')}`);
         }
 
-        const createDeck = new this.cardsModel(CreateCardsDto)
+        const createDeck = new this.cardsModel({
+            cardCommander: cardCommander,
+            cards: cards
+        })
         await createDeck.save();
 
         return 'importado!'

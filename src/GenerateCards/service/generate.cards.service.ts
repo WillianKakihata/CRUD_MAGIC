@@ -16,7 +16,7 @@ export class CardsGenerateService {
 async generate(): Promise<CreateCardsDto> {
     const commander = await this.obterComandante();
     const commanderName = this.obterNomeCarta(commander);
-    const otherCards = await this.obterOutrasCartas(commander.colors || []);
+    const otherCards = await this.get99NonLegendaryCards(commander.colors || []);
     const cardNames = otherCards.map(this.obterNomeCarta);
     const newDeck = new this.cardsModel({
      cardCommander: commanderName,
@@ -38,47 +38,74 @@ private async obterComandante(): Promise<any> {
     return cartasComandante;
   }
 
-  private async obterOutrasCartas(cores: string[]): Promise<any[]> {
-    const consultaCores = cores.join(',');
-    const resposta: AxiosResponse = await axios.get(
-      `https://api.magicthegathering.io/v1/cards?colors=${consultaCores}&supertypes!=legendary`,
-    );
-    const cartasNaoLegendarias = resposta.data.cards;
-    
-    return this.obterCartasAleatorizadas(cartasNaoLegendarias, 99);
-  }
-
   private obterNomeCarta(carta: any): string {
     return carta.name;
   }
 
-  private async obterCartasAleatorizadas(cartas: any[], quantidade: number): Promise<any[]> {
-    if (cartas.length < quantidade) {
-      throw new Error("Não há cartas suficientes disponíveis para atender à solicitação");
+
+  private async get99NonLegendaryCards(colors: string[]): Promise<any[]> {
+    const colorQuery = colors.join(',');
+    const allNonLegendaryCards = [];
+    const maxPages = 3; 
+    let currentPage = 1;
+
+    while (currentPage <= maxPages) {
+        const response: AxiosResponse = await axios.get(
+            `https://api.magicthegathering.io/v1/cards?colors=${colorQuery}&supertypes!=legendary&page=${currentPage}`
+        );
+        const nonLegendaryCards = response.data.cards;
+
+        if (nonLegendaryCards.length === 0) {
+            break;
+        }
+
+        allNonLegendaryCards.push(...nonLegendaryCards);
+        currentPage++;
     }
 
-    const cartasUnicas = new Set();
-    const cartasEmbaralhadas = this.embaralharArray(cartas);
+    console.log('Total de cartas não lendárias retornadas:', allNonLegendaryCards.length);
+    return this.getRandomCards(allNonLegendaryCards, 99);
+}
 
-    for (const carta of cartasEmbaralhadas) {
-      if (cartasUnicas.size >= quantidade) {
-        break;
-      }
-      const nomeCarta = this.obterNomeCarta(carta);
-      if (!cartasUnicas.has(nomeCarta)) {
-        cartasUnicas.add(nomeCarta);
-      }
+
+  private getRandomCards(cards: any[], count: number): any[] {
+    const selectedCards = new Set();
+  
+    while (selectedCards.size < count) {
+        const randomIndex = Math.floor(Math.random() * cards.length);
+        const randomCard = cards[randomIndex];
+  
+        if (!selectedCards.has(randomCard.name)) {
+            selectedCards.add(randomCard.name);
+        } else {
+            let newCardFound = false;
+            for (let i = 0; i < cards.length; i++) {
+                const newRandomCard = cards[Math.floor(Math.random() * cards.length)];
+                if (!selectedCards.has(newRandomCard.name)) {
+                    selectedCards.delete(randomCard.name); 
+                    selectedCards.add(newRandomCard.name); 
+                    console.log(`Substituindo ${randomCard.name} por ${newRandomCard.name}`);
+                    newCardFound = true;
+                    break; 
+                }
+            }
+            if (!newCardFound && selectedCards.size < count) {
+                console.warn('Não há mais cartas disponíveis para substituir.');
+                break;
+            }
+        }
+  
+        if (selectedCards.size >= cards.length) {
+            console.warn('Todas as cartas disponíveis foram selecionadas. Adicione mais cartas.');
+            break;
+        }
     }
-
-    return Array.from(cartasUnicas).map(nome => cartas.find(carta => this.obterNomeCarta(carta) === nome));
-  }
-
-  private embaralharArray(array: any[]): any[] {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+  
+    if (selectedCards.size !== count) {
+        throw new BadRequestException('Não há cartas suficientes para completar o baralho. O baralho deve conter exatamente 99 cartas além do comandante.');
     }
-    return array;
+  
+    return Array.from(selectedCards).map(name => cards.find(card => card.name === name));
   }
 
 
