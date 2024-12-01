@@ -7,17 +7,23 @@ import { AuthGuard } from "../Auth/guard/auth.guard";
 import { RolesGuard } from "../Auth/guard/roles.guard";
 import { Roles } from "../Auth/roles.decorator";
 import { Role } from "../Auth/enum/role.enum";
+import { NotificationQueueService } from "apps/notification_queue/src/notification_queue.service";
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('cards')
 export class CardsController {
-    constructor(private readonly CardsService: CardsService){}
+    constructor(
+        private readonly CardsService: CardsService,
+        private readonly notificationQueueService: NotificationQueueService,
+    ){}
 
     
     @Post()
     async create(@Body() CreateCardsDto: CreateCardsDto): Promise<Cards> {
         try {
-            return this.CardsService.create(CreateCardsDto)
+         const card = await this.CardsService.create(CreateCardsDto)
+         this.notificationQueueService.defaultNestJs(CreateCardsDto);
+         return card;
         } catch (error) {
             throw new HttpException({"message": "ERRO AO CRIAR O DECK"}, HttpStatus.BAD_REQUEST)
         }
@@ -44,9 +50,11 @@ export class CardsController {
 
     @Post(':id')
     @HttpCode(200)
-    update(@Param('id') id: string, @Body() UpdateCardsDto: UpdateCardsDto){
+    async update(@Param('id') id: string, @Body() UpdateCardsDto: UpdateCardsDto){
             try {
-                return this.CardsService.update(id, UpdateCardsDto)
+                const updatedCard = await this.CardsService.update(id, UpdateCardsDto);
+                this.notificationQueueService.defaultNestJs(UpdateCardsDto);
+                return updatedCard;
             } catch (error) {
                 throw new HttpException({"message": "ERRO AO ATUALIZAR O DECK"}, HttpStatus.BAD_REQUEST) 
             }
