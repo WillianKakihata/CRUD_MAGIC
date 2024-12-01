@@ -11,8 +11,12 @@ export class NotificationQueueService {
   ) {}
 
   async defaultNestJs(cards: cardsDto) {
-    console.log(`received a import new Cards!`, );
+    console.log(`received a import new Cards! comandante: ${cards.cardCommander}`, );
   
+  }
+
+  async generateNotification() {
+    console.log(`received generate cards`, );
   }
   
 

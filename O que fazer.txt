@@ -1,7 +1,3 @@
-- Criar Crud de Usuários OK X
-- Criar o sistema de Autenticação para sua API (Só usuários autenticados podem criar e editar seus baralhos) OK X
-- Criar o sistema de Autorização OK X
-
 Implemente a funcionalidade de importação de baralhos de forma assíncrona, utilizando RabbitMQ para gerenciamento de filas e WebSockets para notificações em tempo real aos usuários sobre o status da importação.
 EX:
 
@@ -16,15 +12,6 @@ integração com outros serviços ou persistência final no banco de dados. <- E
 
 OK -> Após concluir o processamento, o worker envia uma mensagem para a fila deck_updates_queue.
 
-- Outro worker, responsável por gerenciar notificações, consome essa mensagem e utiliza WebSockets (por exemplo, com Socket.IO) para emitir um evento de atualização 
+Outro worker, responsável por gerenciar notificações, consome essa mensagem e utiliza WebSockets (por exemplo, com Socket.IO) para emitir um evento de atualização 
 para o cliente conectado.
 
-- O frontend, por sua vez, ouve esse evento e atualiza a interface do usuário em tempo real, informando sobre a conclusão da importação.
-
-
-Ideia ->
-criar um sistema de notificações que informe os usuários sobre as atualizações, ou seja, criar um consumer, mas o grande detalhe é que quando eu criar o consumer, 
-eu nao fazer a parte do lucas
-mas a grande questão é que só podemos criar um sistema de notificações, queremos criar o produtor beleza?
-
-docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4.0-management <- para baixar o rabbitmq
