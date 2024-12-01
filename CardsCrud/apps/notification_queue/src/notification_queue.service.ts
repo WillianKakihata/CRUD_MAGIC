@@ -18,6 +18,16 @@ export class NotificationQueueService {
   async generateNotification() {
     console.log(`received generate cards`, );
   }
+
+  async deleteNotification() {
+    console.log(`received delete cards`, );
+  }
+  
+
+  async updateeNotification() {
+    console.log(`received update cards`, );
+  }
+  
   
 
   @MessagePattern('deck_updates_queue') 
