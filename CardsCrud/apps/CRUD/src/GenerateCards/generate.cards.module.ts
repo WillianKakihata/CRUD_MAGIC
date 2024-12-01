@@ -24,6 +24,18 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           }
         }
       }
+    ]), ClientsModule.register([
+      {
+        name: 'DECK_UPDATE_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'deck_updates_queue',
+          queueOptions: {
+            durable: false,
+          }
+        }
+      }
     ])
   ],
   controllers: [CardsGenerateController],

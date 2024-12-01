@@ -11,4 +11,9 @@ export class NotificationQueueController {
   async defaultNestJs(@Payload() cards: cardsDto){
     return this.notificationQueueService.defaultNestJs(cards);
   }
+
+  @EventPattern('deck_generate_queue')
+  async teste(@Payload() data: any) {
+    return this.notificationQueueService.generateNotification();
+  }
 }

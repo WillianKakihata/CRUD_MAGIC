@@ -1,16 +1,18 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import axios, { AxiosResponse } from "axios";
 import { Model } from "mongoose";
 import { ContextService } from "../../Auth/context.service";
 import { Cards } from "../../Cards/cards.schema";
 import { CreateCardsDto } from "../../Cards/dto/create.cards.dto";
+import { ClientRMQ } from "@nestjs/microservices";
 
 @Injectable()
 export class CardsGenerateService {
     constructor(
     @InjectModel(Cards.name) private readonly cardsModel: Model<Cards>,
-    private readonly contextService: ContextService
+    private readonly contextService: ContextService,
+    @Inject('DECK_UPDATE_SERVICE') private rabbitClient: ClientRMQ
 ) {}
 
 async generate(): Promise<CreateCardsDto> {
@@ -23,11 +25,13 @@ async generate(): Promise<CreateCardsDto> {
      cards: cardNames,
     });
 
-    await newDeck.save();  
+    await newDeck.save(); 
+    this.rabbitClient.emit('deck_generate_queue', newDeck); 
     return {
       cardCommander: commanderName,
       cards: cardNames
     };
+    
   }
 
 private async obterComandante(): Promise<any> {
