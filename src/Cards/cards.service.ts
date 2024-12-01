@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { CreateCardsDto } from "./dto/create.cards.dto";
 import { UpdateCardsDto } from "./dto/update.cards.dto";
 
+
 export class CardsService{
     constructor(@InjectModel(Cards.name) private readonly CardsModel: Model<Cards>) {}
 

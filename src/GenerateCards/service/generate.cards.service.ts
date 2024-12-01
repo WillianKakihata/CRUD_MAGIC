@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import axios, { AxiosResponse } from "axios";
 import { Model } from "mongoose";
@@ -18,18 +18,15 @@ async generate(): Promise<CreateCardsDto> {
     const commanderName = this.obterNomeCarta(commander);
     const otherCards = await this.obterOutrasCartas(commander.colors || []);
     const cardNames = otherCards.map(this.obterNomeCarta);
-    const idUser = this.contextService.getUserId();
     const newDeck = new this.cardsModel({
      cardCommander: commanderName,
      cards: cardNames,
-     idUser: idUser
     });
 
     await newDeck.save();  
     return {
       cardCommander: commanderName,
-      cards: cardNames,
-      idUser: idUser
+      cards: cardNames
     };
   }
 
@@ -86,6 +83,7 @@ private async obterComandante(): Promise<any> {
 
 
 
+  
 
 
 

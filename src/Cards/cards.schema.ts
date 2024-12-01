@@ -12,9 +12,6 @@ export class Cards extends Document {
     @Prop({ type: [String], required: true })
     cards: string[];
 
-    @Prop()
-    idUser: string
-
 }
 
 export const CardsSchema = SchemaFactory.createForClass(Cards);
