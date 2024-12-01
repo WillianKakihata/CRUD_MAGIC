@@ -12,7 +12,7 @@ OK -> A API recebe a requisição, valida os dados e salva as informações inic
 Um worker dedicado está escutando a fila deck_import_queue.
 
 - Ao receber uma mensagem, o worker processa a importação do baralho, realizando todas as operações necessárias, como validação adicional, 
-integração com outros serviços ou persistência final no banco de dados.
+integração com outros serviços ou persistência final no banco de dados. <- Tem que saber como o lucas vai fazer isso ai
 
 - Após concluir o processamento, o worker envia uma mensagem para a fila deck_updates_queue.
 

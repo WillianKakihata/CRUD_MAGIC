@@ -6,6 +6,7 @@ import { CardsModule } from './Cards/cards.module';
 import { CardsGenerateModule } from './GenerateCards/generate.cards.module';
 import { AuthModule } from './Auth/auth.module';
 import { UsersModule } from './Usuario/usuario.module';
+import { CardsProducerModule } from './cards-producer/cards-producer.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { UsersModule } from './Usuario/usuario.module';
     CardsGenerateModule, 
     AuthModule, 
     CardsModule,
-    UsersModule
+    UsersModule,
+    CardsProducerModule
   ],
   controllers: [AppController],
   providers: [AppService],
