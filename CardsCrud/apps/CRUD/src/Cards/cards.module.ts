@@ -31,7 +31,7 @@ import { NotificationQueueService } from 'apps/notification_queue/src/notificati
     UsersModule
   ],
   controllers: [CardsController],
-  providers: [CardsService, ContextService, UsersService,NotificationQueueService],
+  providers: [CardsService, ContextService, UsersService],
   exports: [CardsService],
 })
 export class CardsModule {}

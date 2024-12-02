@@ -14,7 +14,6 @@ import { NotificationQueueService } from "apps/notification_queue/src/notificati
 export class CardsController {
     constructor(
         private readonly CardsService: CardsService,
-        private readonly notificationQueueService: NotificationQueueService,
     ){}
 
     
@@ -22,7 +21,6 @@ export class CardsController {
     async create(@Body() CreateCardsDto: CreateCardsDto): Promise<Cards> {
         try {
          const card = await this.CardsService.create(CreateCardsDto)
-         this.notificationQueueService.defaultNestJs(CreateCardsDto);
          return card;
         } catch (error) {
             throw new HttpException({"message": "ERRO AO CRIAR O DECK"}, HttpStatus.BAD_REQUEST)
@@ -54,7 +52,7 @@ export class CardsController {
     async update(@Param('id') id: string, @Body() UpdateCardsDto: UpdateCardsDto){
             try {
                 const updatedCard = await this.CardsService.update(id, UpdateCardsDto);
-                this.notificationQueueService.defaultNestJs(UpdateCardsDto);
+           
                 return updatedCard;
                 
             } catch (error) {
