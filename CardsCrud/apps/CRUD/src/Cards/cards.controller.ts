@@ -34,6 +34,7 @@ export class CardsController {
     async findAll(): Promise<Cards[]>{
         try {
             return this.CardsService.findAll()
+            
         } catch (error) {
             throw new HttpException({"message": "ERRO AO ENCONTRAR OS DECKS"}, HttpStatus.BAD_REQUEST) 
         }
@@ -55,6 +56,7 @@ export class CardsController {
                 const updatedCard = await this.CardsService.update(id, UpdateCardsDto);
                 this.notificationQueueService.defaultNestJs(UpdateCardsDto);
                 return updatedCard;
+                
             } catch (error) {
                 throw new HttpException({"message": "ERRO AO ATUALIZAR O DECK"}, HttpStatus.BAD_REQUEST) 
             }
@@ -64,6 +66,7 @@ export class CardsController {
     delete(@Param('id') id: string){
         try {
             return this.CardsService.delete(id);
+            
         } catch (error) {
             throw new HttpException({"message": "ERRO AO DELETAR O DECK"}, HttpStatus.BAD_REQUEST) 
         }

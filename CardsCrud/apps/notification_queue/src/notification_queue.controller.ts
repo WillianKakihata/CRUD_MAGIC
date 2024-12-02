@@ -13,7 +13,20 @@ export class NotificationQueueController {
   }
 
   @EventPattern('deck_generate_queue')
-  async teste(@Payload() data: any) {
+  async generateAplication(@Payload() data: any) {
     return this.notificationQueueService.generateNotification();
   }
+
+  @EventPattern('deck_delete_queue')
+  async DeleteAplication(@Payload() data: any) {
+    return this.notificationQueueService.deleteNotification();
+  }
+
+  @EventPattern('deck_update_queue')
+  async AtualizationAplication(@Payload() data: any) {
+    return this.notificationQueueService.updateeNotification();
+  }
+
+
+  
 }
