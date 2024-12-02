@@ -3,13 +3,17 @@ import { Cards } from "./cards.schema";
 import { Model } from "mongoose";
 import { CreateCardsDto } from "./dto/create.cards.dto";
 import { UpdateCardsDto } from "./dto/update.cards.dto";
+import { ClientRMQ } from "@nestjs/microservices";
+import { Inject } from "@nestjs/common";
 
 
 export class CardsService{
-    constructor(@InjectModel(Cards.name) private readonly CardsModel: Model<Cards>) {}
+    constructor(@InjectModel(Cards.name) private readonly CardsModel: Model<Cards>,
+    @Inject('DECK_UPDATE_SERVICE') private rabbitClient: ClientRMQ) {}
 
     async create(createCardsDto: CreateCardsDto): Promise<Cards> {
         const cards = new this.CardsModel(createCardsDto)
+        this.rabbitClient.emit('deck_updates_queue', cards)
         return await cards.save()
         
     }
@@ -28,17 +32,17 @@ export class CardsService{
 
     async update(id: string, UpdateCardsDto: UpdateCardsDto): Promise<Cards> {
         try {
+            this.rabbitClient.emit('deck_update_queue', UpdateCardsDto)
             return await this.CardsModel.findByIdAndUpdate(id, UpdateCardsDto, {new: true});
+            
         } catch (error) {
             return null;
         }
-    
-        return updatedCard;
-      }
+    }
 
     async delete(id: string) {
         try {
-            this.rabbitClient.emit('deck_delete_queue', id)
+            this.rabbitClient.emit('deck_delete_queue', UpdateCardsDto)
             return await this.CardsModel.findByIdAndDelete(id)
         } catch (error) {
             return null
