@@ -33,7 +33,13 @@ async generate(): Promise<CreateCardsDto> {
     };
     
   }
-
+  async createCardsWithCount(count:number):Promise<CreateCardsDto[]>{
+    const createdBaralhos = []
+    for(var baralho = 0; baralho < count;baralho++){
+        createdBaralhos.push(await this.generate()) 
+    }
+    return createdBaralhos
+  }
 private async obterComandante(): Promise<any> {
     const resposta: AxiosResponse = await axios.get(
       'https://api.scryfall.com/cards/random?q=is%3Acommander',

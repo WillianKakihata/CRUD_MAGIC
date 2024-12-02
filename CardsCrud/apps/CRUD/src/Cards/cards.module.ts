@@ -8,6 +8,8 @@ import { ContextService } from '../Auth/context.service';
 import { UsersService } from '../Usuario/usuario.service';
 import { UsersModule } from '../Usuario/usuario.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { NotificationQueueService } from 'apps/notification_queue/src/notification_queue.service';
+
 
 
 @Module({
@@ -29,7 +31,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     UsersModule
   ],
   controllers: [CardsController],
-  providers: [CardsService, ContextService, UsersService],
+  providers: [CardsService, ContextService, UsersService,NotificationQueueService],
   exports: [CardsService],
 })
 export class CardsModule {}

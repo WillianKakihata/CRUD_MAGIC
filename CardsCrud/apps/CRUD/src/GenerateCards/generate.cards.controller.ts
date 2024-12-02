@@ -1,4 +1,4 @@
-import { Body, Controller, HttpException, HttpStatus, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpException, HttpStatus, Param, Post, Request, UseGuards } from "@nestjs/common";
 import { CardsGenerateService } from "./service/generate.cards.service";
 import { CardsValidateService } from "./service/validate.cards.service";
 import { AuthGuard } from "../Auth/guard/auth.guard";
@@ -15,7 +15,10 @@ export class CardsGenerateController {
         return this.CardsGenerateService.generate();
       }
     
-    
+    @Post('generate/:quant')
+    async createCardsWithCount(@Param('quant') count: number):Promise<CreateCardsDto[]>{
+      return this.CardsGenerateService.createCardsWithCount(count)
+    }
     @Post('import')
     async importDeck(@Body() createCardsDto: CreateCardsDto): Promise<string> {
         try {

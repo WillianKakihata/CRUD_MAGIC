@@ -4,7 +4,8 @@ import { Model } from "mongoose";
 import { CreateCardsDto } from "./dto/create.cards.dto";
 import { UpdateCardsDto } from "./dto/update.cards.dto";
 import { ClientRMQ } from "@nestjs/microservices";
-import { Inject } from "@nestjs/common";
+import { Inject, UseGuards } from "@nestjs/common";
+import { RolesGuard } from "../Auth/guard/roles.guard";
 
 
 export class CardsService{
@@ -17,7 +18,7 @@ export class CardsService{
         return await cards.save()
         
     }
-
+    @UseGuards(RolesGuard)
     async findAll(): Promise<Cards[]>{
         return await this.CardsModel.find().exec()
     }
