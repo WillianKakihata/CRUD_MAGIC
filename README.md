@@ -1,129 +1,133 @@
-# API MAGIC
-Esta API de cartas Magic é um serviço que gera decks aleatórios para o jogo, validando se as cartas selecionadas são adequadas e se o deck possui exatamente 99 cartas além do comandante. A integração com APIs externas como Scryfall e Magic: The Gathering é feita para buscar informações sobre cartas e montar o deck. Esse serviço é ideal para ser utilizado em plataformas que permitam a criação de decks de forma dinâmica e personalizada.
-# Documentação
+# 🧙‍♂️ API Magic - Gerador de Decks para Magic: The Gathering
 
-## Instalacao
-Antes de iniciar o projeto é necessário
-Para baixar o rabbitmq e criar uma imagem docker:
-- docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4.0-management
+Esta API é um serviço completo para criação, importação e gerenciamento de decks de Magic: The Gathering. Ela permite gerar decks aleatórios (com um comandante e 99 cartas), importar decks personalizados, além de oferecer funcionalidades de CRUD para cartas e usuários. A integração com as APIs externas como **Scryfall** e **MTG API** garante que as informações estejam sempre atualizadas.
 
-  
-Para baixar as dependencias e começar o projeto, é necessário entrar no arquivo 
-- cd CardsCrud
-- npm i
+---
 
-para iniciar o servidor localmente:
-- cd CardsCrud
-- npm run start:dev 'CRUD' <- para iniciar o servidor local do aplicativo do Magic
-- npm run start":dev 'notification_queue' <- para iniciar o servidor local da fila de notificacao
-- npm run start":dev 'rmq-process' <- para iniciar o servidor local da fila de importacao
+## 📦 Instalação e Execução
 
-## PASTA `CRUD`
-endpoints gerados na pasta CRUD são:
-### 1. **Cartas**
-- **POST /cards**  
-  URL: `http://localhost:3000/cards`  
-  Descrição: Cria uma nova carta.
+### Pré-requisitos
 
-- **GET /cards**  
-  URL: `http://localhost:3000/cards`  
-  Descrição: Retorna uma lista de todas as cartas cadastradas.
-  
-  Roles: É necessário ser `Admin` para acessar este endpoint
+- Docker
+- Node.js
 
-- **GET /cards/:id**  
-  URL: `http://localhost:3000/cards/:id`  
-  Descrição: Retorna os detalhes de uma carta específica pelo ID.
+### Subindo o RabbitMQ com Docker
 
-- **POST /cards/:id**  
-  URL: `http://localhost:3000/cards/:id`  
-  Descrição: Atualiza os dados de uma carta específica.
+```bash
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4.0-management
+```
 
-- **DELETE /cards/:id**  
-  URL: `http://localhost:3000/cards/:id`  
-  Descrição: Deleta uma carta específica pelo ID.
+### Instalando dependências
 
-### 2. **Geração de Cartas (Decks)**
+```bash
+cd CardsCrud
+npm install
+```
 
-- **POST /cards/generate**  
-  URL: `http://localhost:3000/cards/generate`  
-  Descrição: Gera um novo deck de cartas, incluindo um comandante aleatório e 99 cartas não lendárias.
+### Iniciando os servidores
 
-- **POST /cards/import**  
-  URL: `http://localhost:3000/cards/import`  
-  Descrição: Importa um deck de cartas a partir de um arquivo ou dados fornecidos.
+```bash
+# Servidor principal (CRUD)
+npm run start:dev 'CRUD'
 
-### 3. **Usuários**
+# Servidor de notificações (WebSocket + RabbitMQ)
+npm run start:dev 'notification_queue'
 
-- **POST /user**  
-  URL: `http://localhost:3000/user`  
-  Descrição: Cria um novo usuário.
+# Servidor de importação assíncrona
+npm run start:dev 'rmq-process'
+```
 
-- **POST /user/:username**  
-  URL: `http://localhost:3000/user/:username`  
-  Descrição: Atualiza informações do usuário com o nome de usuário especificado.
+---
 
-- **DELETE /user/:username**  
-  URL: `http://localhost:3000/user/:username`  
-  Descrição: Deleta o usuário com o nome de usuário especificado.
+## 📁 Estrutura do Projeto
 
-- **GET /user**  
-  URL: `http://localhost:3000/user`  
-  Descrição: Retorna uma lista de todos os usuários cadastrados.
+- `CardsCrud`: CRUD de cartas, geração/importação de decks, autenticação.
+- `notification_queue`: Gerencia notificações em tempo real via WebSockets.
+- `rmq-process`: Processa importações de decks usando RabbitMQ.
 
-### 4. **Autenticação**
+---
 
-- **POST /auth/login**  
-  URL: `http://localhost:3000/auth/login`  
-  Descrição: Realiza o login do usuário e retorna um token de autenticação.
+## 🔧 Endpoints da API
 
-### 5. **Cartas do Produtor (testes)**
+### 📌 Cartas
 
-- **POST /cards-producer/place-card**  
-  URL: `http://localhost:3000/cards-producer/place-card`  
-  Descrição: Envia uma carta para a fila de produção, para ser processada posteriormente.
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST   | `/cards` | Cria uma nova carta. |
+| GET    | `/cards` | Lista todas as cartas (**requer Admin**). |
+| GET    | `/cards/:id` | Retorna uma carta específica por ID. |
+| POST   | `/cards/:id` | Atualiza os dados de uma carta. |
+| DELETE | `/cards/:id` | Remove uma carta do sistema. |
 
+### 🧩 Geração e Importação de Decks
 
-## PASTA `notification_queue`
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST   | `/cards/generate` | Gera um deck aleatório com 1 comandante e 99 cartas válidas. |
+| POST   | `/cards/import` | Importa um deck de cartas com validações. |
 
-A pasta `notification_queue` é responsável pela gestão das notificações no sistema, utilizando **RabbitMQ** como mecanismo de mensageria. O objetivo principal dessa funcionalidade é garantir que, sempre que um deck de cartas for processado ou atualizado, o sistema envie uma notificação em tempo real para os clientes conectados, mantendo-os atualizados sobre o status da operação.
+### 👤 Usuários
 
-### Funcionalidade
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST   | `/user` | Cria um novo usuário. |
+| GET    | `/user` | Lista todos os usuários. |
+| POST   | `/user/:username` | Atualiza dados de um usuário específico. |
+| DELETE | `/user/:username` | Remove um usuário do sistema. |
 
-- **Mensageria com RabbitMQ**: Ao iniciar o servidor, o sistema se conecta ao RabbitMQ para receber e processar mensagens de filas, como notificações de atualização de decks.
-- **Processamento das Notificações**: Quando um evento relevante ocorre (por exemplo, a criação de um novo deck ou a atualização de um deck existente), o sistema publica uma mensagem na fila correspondente.
-- **Notificação em Tempo Real**: Outro componente do sistema, o consumidor da fila, escuta as mensagens e emite eventos de atualização para os clientes conectados, utilizando **WebSockets**. Isso garante que as notificações sejam entregues em tempo real para os clientes sem a necessidade de polling.
+### 🔐 Autenticação
 
-### Como Funciona
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST   | `/auth/login` | Realiza login e retorna um token JWT. |
 
-1. O servidor escuta as filas do RabbitMQ em busca de novas mensagens de notificações.
-2. Quando uma mensagem é recebida, o sistema processa a informação e, em seguida, emite uma notificação para os clientes por meio de um **WebSocket**.
-3. O cliente, por sua vez, recebe essa notificação e pode atualizar a interface conforme necessário, proporcionando uma experiência dinâmica e interativa.
+### 🧪 Produtor de Cartas (Testes)
 
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST   | `/cards-producer/place-card` | Envia uma carta para a fila do RabbitMQ para testes. |
 
+---
 
-## PASTA `rmq-process`
+## 🧵 `notification_queue` - Notificações em Tempo Real
 
-A funcionalidade foi implementada para permitir a importação de baralhos de forma assíncrona, utilizando RabbitMQ para o gerenciamento de filas e WebSockets para notificações em tempo real aos usuários sobre o status da importação.
+Gerencia notificações via **RabbitMQ** e **WebSockets**.
 
-## Etapas Implementadas
+### Funcionamento
 
-### 1. Requisição de Importação de Baralho
-- O usuário faz uma requisição para importar um baralho.
-- A API recebe a requisição, valida os dados e salva as informações iniciais do baralho no banco de dados.
+1. O servidor escuta mensagens nas filas do RabbitMQ.
+2. Ao receber um evento (ex: deck criado), envia uma notificação por WebSocket.
+3. O cliente recebe e atualiza a interface automaticamente.
 
-### 2. Envio para Fila `deck_import_queue`
-- Após a validação e salvamento inicial, a API envia uma mensagem contendo os detalhes do baralho a ser importado para a fila `deck_import_queue` no RabbitMQ.
-- Um worker dedicado está escutando a fila `deck_import_queue`.
+---
 
-### 3. Processamento do Baralho pelo Worker
-- O worker consome a mensagem da fila e realiza o processamento da importação do baralho.
-- Durante o processamento, é realizada uma **validação adicional** do baralho, que foi implementada conforme necessário.
+## 🔁 `rmq-process` - Importação Assíncrona de Decks
 
-### 4. Envio para Fila `deck_updates_queue`
-- Após concluir o processamento da importação, o worker envia uma mensagem para a fila `deck_updates_queue` para notificar sobre a conclusão do processo.
+Gerencia o processo de importação de decks em segundo plano.
 
-### 5. Notificação ao Cliente via WebSockets
-- Um outro worker, responsável por gerenciar notificações, consome a mensagem da fila `deck_updates_queue`.
+### Etapas
 
+1. O usuário envia uma requisição de importação.
+2. Os dados são enviados para a fila `deck_import_queue`.
+3. O worker consome a fila, valida e processa o deck.
+4. Ao final, envia status para a fila `deck_updates_queue`.
+5. Um consumidor envia a notificação ao cliente via WebSocket.
 
+---
+
+## 🚀 Tecnologias Utilizadas
+
+- **Node.js**, **Express**, **TypeScript**
+- **RabbitMQ** (via Docker)
+- **WebSockets**
+- **APIs externas**: [Scryfall](https://scryfall.com/docs/api), [MTG API](https://magicthegathering.io/)
+
+---
+
+## 📬 Contribuições
+
+Pull requests são bem-vindos! Para mudanças maiores, abra uma issue antes para discutirmos juntos.
+
+---
+
+## 🧙‍♂️ Feito com magia por jogadores de Magic para jogadores de Magic.
